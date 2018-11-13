@@ -42,26 +42,26 @@ Namespace DocumentIteratorExample
         Public Sub New()
             Me.buffer_Renamed = New StringBuilder()
         End Sub
-        Protected ReadOnly Property Buffer() As StringBuilder
+        Protected ReadOnly Property MyBuffer() As StringBuilder
             Get
                 Return buffer_Renamed
             End Get
         End Property
         Public ReadOnly Property Text() As String
             Get
-                Return System.Buffer.ToString()
+                Return MyBuffer.ToString()
             End Get
         End Property
 
         Public Overrides Sub Visit(ByVal text As DocumentText)
             Dim prefix As String = If(text.TextProperties.FontBold, "**", "")
 
-            System.Buffer.Append(prefix)
-            System.Buffer.Append(text.Text)
-            System.Buffer.Append(prefix)
+            MyBuffer.Append(prefix)
+            MyBuffer.Append(text.Text)
+            MyBuffer.Append(prefix)
         End Sub
         Public Overrides Sub Visit(ByVal paragraphEnd As DocumentParagraphEnd)
-            System.Buffer.AppendLine()
+            MyBuffer.AppendLine()
         End Sub
     End Class
 End Namespace
