@@ -15,53 +15,53 @@ Imports System.Windows.Navigation
 Imports System.Windows.Shapes
 
 Namespace DocumentIteratorExample
-    ''' <summary>
-    ''' Interaction logic for MainWindow.xaml
-    ''' </summary>
-    Partial Public Class MainWindow
-        Inherits Window
+	''' <summary>
+	''' Interaction logic for MainWindow.xaml
+	''' </summary>
+	Partial Public Class MainWindow
+		Inherits Window
 
-        Public Sub New()
-            InitializeComponent()
-        End Sub
+		Public Sub New()
+			InitializeComponent()
+		End Sub
 
-        Private Sub SimpleButton_Click(ByVal sender As Object, ByVal e As RoutedEventArgs)
-            Dim visitor As New MyVisitor()
-            Dim iterator As New DocumentIterator(richEditControl1.Document, True)
-            Do While iterator.MoveNext()
-                iterator.Current.Accept(visitor)
-            Loop
-            textEdit1.Text = visitor.Text
-        End Sub
-    End Class
-    Public Class MyVisitor
-        Inherits DocumentVisitorBase
+		Private Sub SimpleButton_Click(ByVal sender As Object, ByVal e As RoutedEventArgs)
+			Dim visitor As New MyVisitor()
+			Dim iterator As New DocumentIterator(richEditControl1.Document, True)
+			Do While iterator.MoveNext()
+				iterator.Current.Accept(visitor)
+			Loop
+			textEdit1.Text = visitor.Text
+		End Sub
+	End Class
+	Public Class MyVisitor
+		Inherits DocumentVisitorBase
 
+'INSTANT VB NOTE: The field buffer was renamed since Visual Basic does not allow fields to have the same name as other class members:
+		Private ReadOnly buffer_Conflict As StringBuilder
+		Public Sub New()
+			Me.buffer_Conflict = New StringBuilder()
+		End Sub
+		Protected ReadOnly Property Buffer() As StringBuilder
+			Get
+				Return buffer_Conflict
+			End Get
+		End Property
+		Public ReadOnly Property Text() As String
+			Get
+				Return Buffer.ToString()
+			End Get
+		End Property
 
-        Private ReadOnly buffer_Renamed As StringBuilder
-        Public Sub New()
-            Me.buffer_Renamed = New StringBuilder()
-        End Sub
-        Protected ReadOnly Property MyBuffer() As StringBuilder
-            Get
-                Return buffer_Renamed
-            End Get
-        End Property
-        Public ReadOnly Property Text() As String
-            Get
-                Return MyBuffer.ToString()
-            End Get
-        End Property
+		Public Overrides Sub Visit(ByVal text As DocumentText)
+			Dim prefix As String = If(text.TextProperties.FontBold, "**", "")
 
-        Public Overrides Sub Visit(ByVal text As DocumentText)
-            Dim prefix As String = If(text.TextProperties.FontBold, "**", "")
-
-            MyBuffer.Append(prefix)
-            MyBuffer.Append(text.Text)
-            MyBuffer.Append(prefix)
-        End Sub
-        Public Overrides Sub Visit(ByVal paragraphEnd As DocumentParagraphEnd)
-            MyBuffer.AppendLine()
-        End Sub
-    End Class
+			Buffer.Append(prefix)
+			Buffer.Append(text.Text)
+			Buffer.Append(prefix)
+		End Sub
+		Public Overrides Sub Visit(ByVal paragraphEnd As DocumentParagraphEnd)
+			Buffer.AppendLine()
+		End Sub
+	End Class
 End Namespace
